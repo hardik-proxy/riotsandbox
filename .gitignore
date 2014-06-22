@@ -21,3 +21,14 @@
 *.i*86
 *.x86_64
 *.hex
+
+# binary folders
+*bin
+*~
+*.orig
+.*.swp
+cachegrind.out*
+.project
+.cproject
+.settings
+/toolchain
