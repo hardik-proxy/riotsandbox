@@ -52,7 +52,7 @@ int main(void)
         return 1;
     }
 #endif
-#if ADC_0_EN
+#if ADC_1_EN
     printf("Initializing ADC_1 @ %i bit resolution", (6 + (2* RES)));
     res = adc_init(ADC_1, RES);
     if (res == 0) {
@@ -63,7 +63,7 @@ int main(void)
         return 1;
     }
 #endif
-#if ADC_0_EN
+#if ADC_2_EN
     printf("Initializing ADC_1 @ %i bit resolution", (6 + (2* RES)));
     res = adc_init(ADC_2, RES);
     if (res == 0) {
