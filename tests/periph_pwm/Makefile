@@ -1,7 +1,7 @@
 export APPLICATION = test_pwm
-export RIOTBASE = ../../RIOT
+export RIOTBASE = ../../../RIOT
 
-include ../../RIOT/tests/Makefile.tests_common
+include ../../../RIOT/tests/Makefile.tests_common
 
 
 USEMODULE += vtimer
