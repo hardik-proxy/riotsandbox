@@ -1,7 +1,11 @@
+# name of your application
 export APPLICATION = test_rgbled
-export RIOTBASE = ../../RIOT
 
-include ../../RIOT/tests/Makefile.tests_common
+# If no BOARD is found in the environment, use this default:
+export BOARD ?= native
+
+# This has to be the absolute path to the RIOT base directory:
+export RIOTBASE ?= $(CURDIR)/../../../RIOT
 
 
 USEMODULE += vtimer

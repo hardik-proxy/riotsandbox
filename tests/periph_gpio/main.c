@@ -50,7 +50,7 @@ int main(void)
     }
     hwtimer_wait(1000000);
 
-    puts("Now toggling pin 6 times with 500ms interval");
+    puts("Now toggling pins 6 times with 500ms interval");
     for (int c = 0; c < 6; c++) {
         for (int i = 0; i < GPIO_NUMOF; i++) {
             gpio_toggle(i);

@@ -19,11 +19,12 @@
  */
 
 #include <stdio.h>
+#include <stdint.h>
 
 #include "periph_conf.h"
 #include "periph/gpio.h"
 
-#define ACTIVE_FLANK        GPIO_RISING
+#define ACTIVE_FLANK        GPIO_FALLING
 #define PULL                GPIO_PULLDOWN
 
 uint32_t state = 0;
