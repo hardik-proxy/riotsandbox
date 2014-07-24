@@ -1,5 +1,5 @@
 # name of your application
-export APPLICATION = test_rgbled
+export APPLICATION = test_periph_uart_int
 
 # If no BOARD is found in the environment, use this default:
 export BOARD ?= native
@@ -7,9 +7,11 @@ export BOARD ?= native
 # This has to be the absolute path to the RIOT base directory:
 export RIOTBASE ?= $(CURDIR)/../../../RIOT
 
+# Change this to 0 show compiler invocation lines by default:
+export QUIET ?= 1
 
-USEMODULE += vtimer
-USEMODULE += color
-USEMODULE += rgbled
+# Define modules to be compiled in
+export USEMODULE += vtimer
+export USEMODULE += lib
 
 include $(RIOTBASE)/Makefile.include

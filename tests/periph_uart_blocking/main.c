@@ -7,13 +7,16 @@
  */
 
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
+
+#include "cpu.h"
 
 #include "vtimer.h"
 #include "board.h"
 #include "periph/uart.h"
 
- static int baudrates[] = {115200, 57600, 9600, 38400, 115200, 115200};
+static int baudrates[] = {115200, 57600, 9600, 38400, 115200, 115200};
 
 
 void uart_print(uart_t dev, char *str)
@@ -48,7 +51,6 @@ int main(void)
     }
     printf("\n");
 
-
     for (i = UART_0; i < UART_NUMOF; i++) {
         if (i != STDIO) {
             printf("Please Connect to UART_%i @ %i now, press return when done\n", i, baudrates[i]);
@@ -60,7 +62,7 @@ int main(void)
             uart_print(i, ask);
             p = 0;
             memset(buf, 0, 128);
-            printf("Input: ");
+            printf("Input was: ");
             do {
                 uart_read_blocking(i, &buf[p++]);
                 printf("%c", buf[p - 1]);
