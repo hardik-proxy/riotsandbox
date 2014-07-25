@@ -48,10 +48,9 @@ static const shell_command_t shell_commands[] = {
 
 void on_cs(void)
 {
-    spi_transmission_begin(DEV, ' ');
+    spi_transmission_begin(DEV, '3');
     state = 0;
     rw = INIT;
-    puts("gpio cb");
 }
 
 char on_data(char data)
@@ -95,17 +94,17 @@ int main(void)
     int res;
     shell_t shell;
 
-    puts("RIOT SPI Slave test");
+    puts("\nRIOT SPI Slave test");
     puts("desc...\n");
 
     /* initialize the CS line */
     printf("Initializing the CS line");
-    res = gpio_init_int(CS, GPIO_NOPULL, GPIO_FALLING, on_cs);
+    res = gpio_init_int(CS, GPIO_PULLUP, GPIO_FALLING, on_cs);
     if (res >= 0) {
-        puts("     ...[ok]\n");
+        puts("      ...[ok]");
     }
     else {
-        puts("     ...[failed]");
+        puts("      ...[failed]");
         return -1;
     }
 
@@ -113,14 +112,14 @@ int main(void)
     printf("Initializing the SPI device");
     res = spi_init_slave(DEV, MODE, on_data);
     if (res >= 0) {
-        puts("     ...[ok]\n");
+        puts("   ...[ok]");
     }
     else {
-        puts("     ...[failed]");
+        puts("   ...[failed]");
     }
 
     /* run the shell */
-    puts("Starting the shell     ...[ok]");         /* we trust it... */
+    puts("Starting the shell            ...[ok]\n");         /* we trust it... */
     shell_init(&shell, shell_commands, SHELL_BUFSIZE, shell_getchar, shell_putchar);
     shell_run(&shell);
 

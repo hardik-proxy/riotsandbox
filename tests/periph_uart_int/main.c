@@ -26,6 +26,8 @@
 
 static volatile int main_pid;
 
+static volatile int status = 0;
+
 static char rx_mem[128];
 static char tx_mem[128];
 static ringbuffer_t rx_buf;
@@ -40,7 +42,7 @@ void rx(void *ptr, char data)
     ringbuffer_add_one(&rx_buf, data);
     if (data == '\n') {
         printf("got line end \n");
-        msg_send(&msg, 1, 0);
+        status = 1;
     }
 }
 
@@ -60,7 +62,7 @@ int tx(void *ptr)
 
 int main(void)
 {
-    //char *status = "I am written to the UART every 2 seconds\n";
+    char *status = "I am written to the UART every 2 seconds\n";
     char buf[128];
     int res;
     msg_t msg;
@@ -83,11 +85,22 @@ int main(void)
         return 1;
     }
 
+    ringbuffer_add(&tx_buf, status, strlen(status));
+    uart_tx_begin(DEV);
+
     while (1) {
         printf("Going into receive message state\n");
-        msg_receive(&msg);
+        //msg_receive(&msg);
 
-        printf("got message");
+        if (status) {
+            printf("INPUT: ");
+            res = ringbuffer_get(&rx_buf, buf, rx_buf.avail);
+            buf[res] = '\0';
+            printf("%s", buf);
+            status = 0;
+        }
+
+/*        printf("got message");
 
         if (msg.type == MSG_LINE_RDY) {
             printf("INPUT: ");
@@ -95,6 +108,8 @@ int main(void)
             buf[res] = '\0';
             printf("%s", buf);
         }
+*/
+
     }
 
     return 0;

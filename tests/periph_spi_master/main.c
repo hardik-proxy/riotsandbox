@@ -65,8 +65,15 @@ static void send_hello(int argc, char **argv)
 {
     int res;
 
+    puts("CS to low");
     gpio_clear(CS);
+    vtimer_usleep(1000000);
+    puts("Start transfer");
     res = spi_transfer_bytes(DEV, hello, buffer, strlen(hello));
+
+    puts("Stop transfer");
+    vtimer_usleep(1000000);
+    puts("CS -> high");
     gpio_set(CS);
 
     buffer[res] = '\0';
@@ -118,17 +125,17 @@ int main(void)
     int res;
     shell_t shell;
 
-    puts("RIOT SPI Master test");
+    puts("\nRIOT SPI Master test");
     puts("desc...\n");
 
     /* initialize the CS line */
     printf("Initializing the CS line");
-    res = gpio_init_out(CS, GPIO_PULLUP);
+    res = gpio_init_out(CS, GPIO_NOPULL);
     if (res >= 0) {
-        puts("     ...[ok]\n");
+        puts("      ...[ok]");
     }
     else {
-        puts("     ...[failed]");
+        puts("      ...[failed]");
         return -1;
     }
     gpio_set(CS);
@@ -137,14 +144,14 @@ int main(void)
     printf("Initializing the SPI device");
     res = spi_init_master(DEV, MODE, CLOCK);
     if (res >= 0) {
-        puts("     ...[ok]\n");
+        puts("   ...[ok]");
     }
     else {
-        puts("     ...[failed]");
+        puts("   ...[failed]");
     }
 
     /* run the shell */
-    puts("Starting the shell     ...[ok]");         /* we trust it... */
+    puts("Starting the shell            ...[ok]\n");         /* we trust it... */
     shell_init(&shell, shell_commands, SHELL_BUFSIZE, shell_getchar, shell_putchar);
     shell_run(&shell);
 
