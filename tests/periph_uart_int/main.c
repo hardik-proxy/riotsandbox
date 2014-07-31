@@ -18,8 +18,8 @@
 #include "periph/uart.h"
 
 
-#define DEV             UART_1
-#define BAUD            9600
+#define DEV             UART_0
+#define BAUD            115200
 
 #define MSG_LINE_RDY    0
 #define MSG_TICK        1

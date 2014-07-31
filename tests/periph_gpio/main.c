@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 
+#include "cpu.h"
 #include "periph_conf.h"
 #include "periph/gpio.h"
 #include "hwtimer.h"
@@ -67,6 +68,7 @@ int main(void)
 
     puts("Will now poll all pins and print status on change");
     printf("Initial state: 0x%x\n", (unsigned int)state);
+
     while (1) {
         state = 0;
         for (int i = 0; i < GPIO_NUMOF; i++) {

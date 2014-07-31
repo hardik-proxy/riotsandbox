@@ -19,7 +19,7 @@
 #include "periph/uart.h"
 
 
-#define DEV             UART_2
+#define DEV             UART_1
 #define BAUD            38400
 
 #define MSG_LINE_RDY    0
@@ -35,8 +35,9 @@ static ringbuffer_t rx_buf;
 static ringbuffer_t tx_buf;
 
 
-void rx(char data)
+void rx(void *arg, char data)
 {
+    (void)arg;
     msg_t msg;
     msg.type = MSG_LINE_RDY;
 
@@ -47,17 +48,17 @@ void rx(char data)
     }
 }
 
-void tx(void)
+int tx(void *arg)
 {
+    (void)arg;
     char data;
 
     if (tx_buf.avail > 0) {
         data = ringbuffer_get_one(&tx_buf);
         uart_write(DEV, data);
+        return 1;
     }
-    else {
-        uart_tx_end(DEV);
-    }
+    return 0;
 }
 
 void* uart_thread(void *arg)
@@ -68,7 +69,11 @@ void* uart_thread(void *arg)
         ringbuffer_add(&tx_buf, status, strlen(status));
         uart_tx_begin(DEV);
 
+        // for (int i = 0; i < 1000000; i++) {
+        //     puts("tx_done");
+        // }
         vtimer_usleep(1000 * 1000);
+        puts("vtimer_done");
     }
 
     return 0;
@@ -90,7 +95,7 @@ int main(void)
     ringbuffer_init(&tx_buf, tx_mem, 128);
 
     printf("Initializing UART @ %i", BAUD);
-    if (uart_init(DEV, BAUD, rx, tx) >= 0) {
+    if (uart_init(DEV, BAUD, rx, tx, 0) >= 0) {
         printf("   ...done\n");
     }
     else {
