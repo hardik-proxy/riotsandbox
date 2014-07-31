@@ -39,30 +39,34 @@
 static servo_t servo;
 static volatile int run = 0;
 static int state = 0;
+static int bouncing = 1;
 
 void event(void)
 {
-    run = 0;
-    switch (state++) {
-        case 0:
-            puts("put to center");
-            servo_set(&servo, CENTER);
-            break;
-        case 1:
-            puts("put to far right");
-            servo_set(&servo, MIN);
-            break;
-        case 2:
-            puts("put to far left");
-            servo_set(&servo, MAX);
-            break;
-        case 3:
-            puts("moving back and forth");
-            run = 1;
-            break;
-    }
-    if (state == 4) {
-        state = 0;
+    if (bouncing) {
+        run = 0;
+        switch (state++) {
+            case 0:
+                puts("put to center");
+                servo_set(&servo, CENTER);
+                break;
+            case 1:
+                puts("put to far right");
+                servo_set(&servo, MIN);
+                break;
+            case 2:
+                puts("put to far left");
+                servo_set(&servo, MAX);
+                break;
+            case 3:
+                puts("moving back and forth");
+                run = 1;
+                break;
+        }
+        if (state == 4) {
+            state = 0;
+        }
+        bouncing = 0;
     }
 }
 
@@ -89,6 +93,10 @@ int main(void)
             }
 
             vtimer_usleep(INTERVAL);
+        }
+        if (!bouncing) {
+            vtimer_usleep(25 * 1000);
+            bouncing = 1;
         }
     }
 
