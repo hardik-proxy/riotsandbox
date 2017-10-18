@@ -26,35 +26,65 @@ import os
 import re
 import subprocess
 
-covered = set()
-skip = set()
-nobuild = set()
+skip = list()
+nobuild = list()
+notest = list()
+failed = list()
+ok = list()
+
+
+def pc(str):
+    sys.stdout.write(str)
+    sys.stdout.flush()
 
 def run_test(test, name):
+    try:
+        subprocess.check_output(["make", "-C", test, "-n", "test"],
+                                stderr=subprocess.STDOUT)
+    except:
+        print(" [NO TARGET 'test']")
+        return;
+
+    pc(" building ")
     if subprocess.call(["make", "-C", test, "all"],
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
-        print("[BUILD FAILED]", name)
-        nobuild.add(name)
+        nobuild.append(name)
+        print("[FAILED]")
         return
+    else:
+        pc("[OK]")
 
+    pc(" flashing ")
+    if subprocess.call(["make", "-C", test, "flash"], stdout=subprocess.DEVNULL) != 0:
+        print("[FAILED]")
+        return
+    else:
+        pc("[OK]")
+
+    pc(" testing ")
     try:
-        test = subprocess.check_output(["make", "-C", test, "test"], stderr=subprocess.DEVNULL)
-        # print(test)
-        print("make test:", test)
-    except:
-        print("no make test")
+        out = subprocess.check_output(["make", "-C", test, "test"], stderr=subprocess.STDOUT)
+        ok.append(name)
+        print("[OK]")
+    except subprocess.CalledProcessError as err:
+        if re.match(".+No rule to make target `test'\..+", str(err.output)):
+            notest.append(name)
+            print("[NO TARGET 'test']")
+        else:
+            failed.append(name)
+            print("[FAILED]")
 
 
 def check_test(test):
     name = os.path.basename(test)
-    covered.add(name)
+    print('{:<30}'.format(name), end='')
     foo = subprocess.check_output(["make", "-C", test, "info-boards-supported"])
     if "native" in str(foo).split():
-        print("[ RUN]", name)
         run_test(test, name)
     else:
-        print("[SKIP]", name)
-        skip.add(name)
+        print(" [SKIP]")
+        skip.append(name)
+
 
 def main(args):
     tests = os.path.join(os.path.abspath(args.riotbase), "tests")
@@ -63,11 +93,20 @@ def main(args):
         if os.path.isdir(test):
             check_test(test)
 
-    for name in covered:
-        if name in skip:
-            print(name, "skipped")
-        if name in nobuild:
-            print(name, "build failed")
+    print("[OK]")
+    for name in ok:
+        print("-", name)
+    print("\n[TEST FAILED]")
+    for name in failed:
+        print("-", name)
+    print("\n[BUILD FAILED]")
+    for name in nobuild:
+        print("-", name)
+    print("\n[NO 'test' TARGET]")
+    for name in notest:
+        print("-", name)
+    for name in skip:
+        print("-", name)
 
 
 if __name__ == "__main__":
