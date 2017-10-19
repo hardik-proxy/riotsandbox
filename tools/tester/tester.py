@@ -37,17 +37,21 @@ def pc(str):
     sys.stdout.write(str)
     sys.stdout.flush()
 
-def run_test(test, name):
+def run_test(env, test, name):
     try:
         subprocess.check_output(["make", "-C", test, "-n", "test"],
+                                env=env,
                                 stderr=subprocess.STDOUT)
     except:
+        notest.append(name)
         print(" [NO TARGET 'test']")
         return;
 
     pc(" building ")
     if subprocess.call(["make", "-C", test, "all"],
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
+                       env=env,
+                       stdout=subprocess.DEVNULL,
+                       stderr=subprocess.DEVNULL) != 0:
         nobuild.append(name)
         print("[FAILED]")
         return
@@ -55,7 +59,10 @@ def run_test(test, name):
         pc("[OK]")
 
     pc(" flashing ")
-    if subprocess.call(["make", "-C", test, "flash"], stdout=subprocess.DEVNULL) != 0:
+    if subprocess.call(["make", "-C", test, "flash"],
+                       env=env,
+                       stdout=subprocess.DEVNULL,
+                       stderr=subprocess.DEVNULL) != 0:
         print("[FAILED]")
         return
     else:
@@ -63,7 +70,9 @@ def run_test(test, name):
 
     pc(" testing ")
     try:
-        out = subprocess.check_output(["make", "-C", test, "test"], stderr=subprocess.STDOUT)
+        out = subprocess.check_output(["make", "-C", test, "test"],
+                                      env=env,
+                                      stderr=subprocess.STDOUT)
         ok.append(name)
         print("[OK]")
     except subprocess.CalledProcessError as err:
@@ -75,23 +84,28 @@ def run_test(test, name):
             print("[FAILED]")
 
 
-def check_test(test):
+def check_test(test, board):
+    env = os.environ.copy()
+    env['BOARD'] = board
     name = os.path.basename(test)
+
     print('{:<30}'.format(name), end='')
-    foo = subprocess.check_output(["make", "-C", test, "info-boards-supported"])
-    if "native" in str(foo).split():
-        run_test(test, name)
+    foo = subprocess.check_output(["make", "-C", test, "info-boards-supported"],
+                                  env=env)
+    if board in str(foo).split():
+        run_test(env, test, name)
     else:
         print(" [SKIP]")
         skip.append(name)
 
 
 def main(args):
+    print("Running tests for '{}'".format(args.board))
     tests = os.path.join(os.path.abspath(args.riotbase), "tests")
     for file in sorted(os.listdir(tests)):
         test = os.path.join(tests, file)
         if os.path.isdir(test):
-            check_test(test)
+            check_test(test, args.board)
 
     print("[OK]")
     for name in ok:
@@ -111,7 +125,7 @@ def main(args):
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
-    # p.add_argument("board", default="native", nargs="?", help="RIOT base directory")
+    p.add_argument("board", default="native", nargs="?",help="Target board")
     p.add_argument("riotbase", default="../../../RIOT", nargs="?", help="RIOT base directory")
     args = p.parse_args()
     main(args)
