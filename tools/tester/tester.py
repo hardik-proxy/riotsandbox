@@ -32,6 +32,15 @@ notest = list()
 failed = list()
 ok = list()
 
+def native_set_up(riotbase):
+    # check if there is already a TAP bridge (THIS IS NOT PORTABLE TO BSD/OSX)
+    if subprocess.call(["ifconfig", "tapbr0"], stdout=subprocess.DEVNULL) != 0:
+        try:
+            print("Need sudo to create TAPs")
+            subprocess.check_output(
+                os.path.join(riotbase, "dist", "tools", "tapsetup", "tapsetup"))
+        except:
+            raise SystemError("Can not set up TAP bridge for native test")
 
 def pc(str):
     sys.stdout.write(str)
@@ -100,6 +109,8 @@ def check_test(test, board):
 
 
 def main(args):
+    if args.board == "native":
+        native_set_up(args.riotbase)
     print("Running tests for '{}'".format(args.board))
     tests = os.path.join(os.path.abspath(args.riotbase), "tests")
     for file in sorted(os.listdir(tests)):
