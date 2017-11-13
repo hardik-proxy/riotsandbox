@@ -31,6 +31,7 @@ def get_boards(app):
 def main(args):
     app = os.path.join(os.path.abspath(args.riotbase), args.app)
     env = os.environ.copy()
+    count = 0
 
     for board in get_boards(app):
         env['BOARD'] = board;
@@ -43,6 +44,9 @@ def main(args):
         if len(a) != len(set(a)):
             print('{}: duplicates found ({})'.format(board, len(a) - len(set(a))))
             print(a)
+            count += 1
+
+    print("found {} diffs".format(count))
 
 
 
