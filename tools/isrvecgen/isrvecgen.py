@@ -63,7 +63,7 @@ def parse_header(file, cpus):
     with open(file, 'r', encoding = "ISO-8859-1") as f:
          for line in f:
             m = re.match(" +([_0-9A-Za-z]+)_IRQn += (-?\d+),? +"
-                         "(/\*!<|/\*\*<) (.+[a-zA-Z0-9]) +\*/", line)
+                         "(/\*!<|/\*\*<) (.+[^\s]) *\*/", line)
             if m:
                 num = int(m.group(2))
                 name = 'isr_{}'.format(m.group(1).lower())
