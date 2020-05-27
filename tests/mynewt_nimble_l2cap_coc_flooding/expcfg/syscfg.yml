@@ -1,0 +1,16 @@
+syscfg.defs:
+  EXPCFG_NODENAME:
+    description: 'name put in GAP AD used for auto-connecting'
+    value: '"es0_blubberman"'
+  EXPCFG_CID:
+    description: 'used L2CAP CID'
+    value: 0x0235
+  EXPCFG_MTU:
+    description: 'used MTU size'
+    value: 5000
+  EXPCFG_BUF_CHUNKSIZE:
+    description: 'split app buffer in mbufs of this size'
+    value: 250
+  EXPCFG_BUF_NUM:
+    description: 'number of MTU sizes to allocate as buffer on app level'
+    value: 3

@@ -1,0 +1,22 @@
+
+syscfg.defs:
+  SEQSTATS_AVG_ITVL:
+    description: 'collect events for x sec'
+    value: 10
+  SEQSTATS_SLOT_SIZE:
+    description: 'count events for x ms'
+    value: 250
+  SEQSTATS_TASK_PRIO:
+    description: 'printer task priority'
+    value: MYNEWT_VAL_OS_MAIN_TASK_PRIO + 1
+  SEQSTATS_STACKSIZE:
+    description: 'stack size'
+    value: 1024
+  SEQSTATS_TIMER:
+    description: 'HAL timer to use'
+    value: 2
+  SEQSTATS_TIMER_FREQ:
+    description: 'Use this timer frequency [in Hz]'
+    value: 1000000
+
+syscfg.vals:
